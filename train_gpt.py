@@ -18,6 +18,17 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 # use of FlexAttention contributed by @KoszarskyB
 from torch.nn.attention.flex_attention import BlockMask, flex_attention
 
+# -------------------------------------------------------------------------------
+# Argument handling
+import argparse
+parser = argparse.ArgumentParser("train_gpt.py")
+parser.add_argument("gpu_num", help="Number of available GPUs", type=int)
+parser.add_argument("batch_size", help="Batch size for training. Reduce if memory is tight. Default = 64", type=int)
+cmd_args = parser.parse_args()
+
+gpus  = cmd_args.gpu_num
+bsize = cmd_args.batch_size
+
 # -----------------------------------------------------------------------------
 # Muon optimizer
 
@@ -381,8 +392,8 @@ class Hyperparameters:
     val_files = 'data/fineweb10B/fineweb_val_*.bin' # input .bin to eval validation loss on
     val_tokens = 10485760 # how many tokens of validation data? it's important to keep this fixed for consistent comparisons
     # optimization
-    max_device_batch_size = 64*1024 # batch size per device in tokens
-    batch_size = 4*max_device_batch_size # batch size in tokens
+    max_device_batch_size = bsize*1024 # batch size per device in tokens
+    batch_size = gpus*max_device_batch_size # batch size in tokens
     num_iterations = 1390 # number of iterations to run
     cooldown_frac = 0.4 # fraction of training spent cooling down the learning rate
     bf16_embeds = True
@@ -390,6 +401,7 @@ class Hyperparameters:
     val_loss_every = 125 # every how many steps to evaluate val loss? 0 for only at the end
     # implementation
     save_checkpoint = False
+
 args = Hyperparameters()
 
 micro_bs = args.max_device_batch_size
