@@ -18,6 +18,17 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 # use of FlexAttention contributed by @KoszarskyB
 from torch.nn.attention.flex_attention import BlockMask, flex_attention
 
+# -------------------------------------------------------------------------------
+# Argument handling
+import argparse
+parser = argparse.ArgumentParser("train_gpt.py")
+parser.add_argument("gpu_num", help="Number of available GPUs", type=int)
+parser.add_argument("batch_size", help="Batch size for training. Reduce if memory is tight. Default = 64", type=int)
+cmd_args = parser.parse_args()
+
+gpus  = cmd_args.gpu_num
+bsize = cmd_args.batch_size
+
 # -----------------------------------------------------------------------------
 # Muon optimizer
 
