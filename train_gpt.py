@@ -381,8 +381,8 @@ class Hyperparameters:
     val_files = 'data/fineweb10B/fineweb_val_*.bin' # input .bin to eval validation loss on
     val_tokens = 10485760 # how many tokens of validation data? it's important to keep this fixed for consistent comparisons
     # optimization
-    max_device_batch_size = 64*1024 # batch size per device in tokens
-    batch_size = 4*max_device_batch_size # batch size in tokens
+    max_device_batch_size = bsize*1024 # batch size per device in tokens
+    batch_size = gpus*max_device_batch_size # batch size in tokens
     num_iterations = 1390 # number of iterations to run
     cooldown_frac = 0.4 # fraction of training spent cooling down the learning rate
     bf16_embeds = True
